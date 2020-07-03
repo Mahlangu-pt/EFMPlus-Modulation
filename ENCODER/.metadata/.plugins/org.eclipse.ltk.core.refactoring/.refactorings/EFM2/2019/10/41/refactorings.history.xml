@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;EFM2/src/Viterbi&apos; to &apos;Viterbi.c&apos;" description="Rename resource &apos;Viterbi&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/Viterbi" name="Viterbi.c" stamp="1570804705891" updateReferences="true"/>
+</session>

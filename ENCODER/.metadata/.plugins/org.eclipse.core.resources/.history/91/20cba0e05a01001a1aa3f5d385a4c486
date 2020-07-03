@@ -1,0 +1,17 @@
+/*
+ * Noise.h
+ *
+ *  Created on: Nov 7, 2019
+ *      Author: project
+ */
+
+#ifndef NOISE_H_
+#define NOISE_H_
+#include "stm32f4xx.h"
+#include<string.h>
+#include <math.h>
+
+
+
+
+#endif /* NOISE_H_ */

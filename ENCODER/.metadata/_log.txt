@@ -1,0 +1,110 @@
+!SESSION 2019-11-08 16:27:01.719 -----------------------------------------------
+eclipse.buildId=unknown
+java.version=1.7.0_51
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=en_ZA
+Command-line arguments:  -os win32 -ws win32 -arch x86
+
+This is a continuation of log file C:\Users\project\Desktop\TX_Project\.metadata\.bak_0.log
+Created Time: 2019-11-08 16:27:27.968
+
+!ENTRY TrueSTUDIO 1 0 2019-11-08 16:27:27.968
+!MESSAGE Target:ARM, Version:5.4.0, Build date: 20151109-1237, Installation dir:/C:/Program Files (x86)/Atollic/TrueSTUDIO for ARM 5.4.0/ide/
+
+!ENTRY TrueSTUDIO License 1 0 2019-11-08 16:27:29.419
+!MESSAGE Valid local features found: 0
+
+!ENTRY TrueSTUDIO License 1 0 2019-11-08 16:27:29.427
+!MESSAGE Valid network features found: 0
+
+!ENTRY TrueSTUDIO License 1 0 2019-11-08 16:27:29.428
+!MESSAGE License system initialized in 1370ms
+
+!ENTRY TrueSTUDIO 1 0 2019-11-08 16:27:29.428
+!MESSAGE License numbers: 0 []
+
+!ENTRY com.atollic.truestudio.mbs 1 0 2019-11-08 16:31:30.569
+!MESSAGE MCU: STM32F429AI
+
+!ENTRY com.atollic.truestudio.mbs 1 0 2019-11-08 16:31:30.660
+!MESSAGE cache updated
+
+!ENTRY com.atollic.truestudio.integration.processorexpert 0 0 2019-11-08 16:31:37.670
+!MESSAGE Atollic TrueSTUDIO Processor Expert integration is up.
+
+!ENTRY edu.hawaii.ics.csdl.jupiter 1 0 2019-11-08 16:31:37.941
+!MESSAGE Code Review is up.
+
+!ENTRY sst.gp.core 1 0 2019-11-08 16:31:39.506
+!MESSAGE sst.gp.core earlyStartup()
+
+!ENTRY sst.gp.core 1 0 2019-11-08 16:31:39.550
+!MESSAGE Register ResourceChangeListener to current workspace
+
+!ENTRY sst.gp.core 1 0 2019-11-08 16:31:39.552
+!MESSAGE Register WorkspaceSelectionListener to current workspace
+
+!ENTRY sst.gp.core 1 0 2019-11-08 16:31:40.148
+!MESSAGE ##sst.gp.core Util##PLATFORM_INSTALL_LOCATION: C:\Program Files (x86)\Atollic\TrueSTUDIO for ARM 5.4.0\ide
+
+!ENTRY sst.gp.core 1 0 2019-11-08 16:31:40.148
+!MESSAGE Platform installed location : C:\Program Files (x86)\Atollic\TrueSTUDIO for ARM 5.4.0\ide
+
+!ENTRY sst.gp.core 1 0 2019-11-08 16:31:40.150
+!MESSAGE IS_ATOLLIC_PLUGIN_INSTALLED : true
+
+!ENTRY sst.gp.core 1 0 2019-11-08 16:31:40.150
+!MESSAGE ATOLLIC_INSTALL_STATUS(stm32): -1
+
+!ENTRY sst.gp.core 1 0 2019-11-08 16:31:40.150
+!MESSAGE ATOLLIC_INSTALL_STATUS(avr): -1
+
+!ENTRY sst.gp.core 1 0 2019-11-08 16:31:40.151
+!MESSAGE ATOLLIC_INSTALL_STATUS(arm): 2
+
+!ENTRY com.suresofttech.cs.rimx 1 0 2019-11-08 16:31:40.879
+!MESSAGE iconv is loaded.
+
+!ENTRY com.suresofttech.cs.rimx 1 0 2019-11-08 16:31:40.940
+!MESSAGE est is loaded.
+
+!ENTRY com.suresofttech.cs.rimx 1 0 2019-11-08 16:31:40.973
+!MESSAGE libiconv-2 is loaded.
+
+!ENTRY com.suresofttech.cs.rimx 1 0 2019-11-08 16:31:41.046
+!MESSAGE libintl-2 is loaded.
+
+!ENTRY com.suresofttech.cs.rimx 1 0 2019-11-08 16:31:41.666
+!MESSAGE xerces-c_2_7 is loaded.
+
+!ENTRY com.suresofttech.cs.rimx 1 0 2019-11-08 16:31:41.884
+!MESSAGE RIMXJNI is loaded.
+
+!ENTRY sst.csgp 1 0 2019-11-08 16:31:43.100
+!MESSAGE platform install loc : C:\Program Files (x86)\Atollic\TrueSTUDIO for ARM 5.4.0\ide
+
+!ENTRY sst.tm 1 0 2019-11-08 16:31:43.153
+!MESSAGE C:\Program Files (x86)\Atollic\TrueSTUDIO for ARM 5.4.0\ide\plugins\sst.tm_1.1.2.201508171502\CSHOME\
+
+!ENTRY sst.tm 1 0 2019-11-08 16:31:43.204
+!MESSAGE C:\Users\project\Desktop\TX_Project\.metadata\.plugins\sst.tm
+
+!ENTRY org.eclipse.egit.ui 2 0 2019-11-08 16:31:50.112
+!MESSAGE Warning: EGit couldn't detect the installation path "gitPrefix" of native Git. Hence EGit can't respect system level
+Git settings which might be configured in ${gitPrefix}/etc/gitconfig under the native Git installation directory.
+The most important of these settings is core.autocrlf. Git for Windows by default sets this parameter to true in
+this system level configuration. The Git installation location can be configured on the
+Team > Git > Configuration preference page's 'System Settings' tab.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY sst.tm 1 0 2019-11-08 16:31:51.203
+!MESSAGE 
+
+
+---------------------------------------------------
+2019/11/08 16:31:51
+---------------------------------------------------
+
+
+!ENTRY com.atollic.truestudio.productmanager 1 0 2019-11-08 16:32:33.241
+!MESSAGE Unloading product manager

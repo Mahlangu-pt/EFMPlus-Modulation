@@ -1,0 +1,342 @@
+/* Includes */
+#include "stm32f4xx.h"
+#include "stm32f4xx_rcc.h"
+#include "stm32f4xx_gpio.h"
+#include "stm32f4xx_usart.h"
+#include<string.h>
+#include "Tables.h"
+#include "Encoder.h"
+#include "Decoder.h"
+#include "Conv_Encoder.h"
+#include "Viterbi.h"
+#include <stdlib.h>
+#include "defines.h"
+#include "tm_stm32f4_spi.h"
+#include "stm32f4xx_spi.h"
+#include "tm_stm32f4_ili9341.h"
+#include "tm_stm32f4_fonts.h"
+
+
+enum { samples = 12 };
+/* Private macro */
+
+/* Private variables */
+char rx_data[3];
+char buffer[6];
+char buffer2[4];
+char *eptr;
+int temp0[16];
+uint16_t temp1[samples];
+int temp2[16];
+int temp3[16];
+int temp4[16];
+int temp5[8];
+int temp6[8*samples];
+int temp7[8];
+int temp8[64*samples];
+int temp9[16*samples];
+int temp10[16];
+int temp11[16];
+int hold1[16];
+int hold2[16];
+int hold3;
+int table;
+int state;
+int Out_Data[8*samples];
+int Out_Data2[samples-1];
+uint16_t EFM_Encoder1_Data[samples];
+uint16_t TO_Decoder[3];
+int to_conv;
+uint16_t Conv_data[16];
+/* Private functions */
+void GPIO_Configuration(void);
+void USART_Config(void);
+void USART_PutChar(char c);
+void To_String(char* _buffer, unsigned int data);
+void To_String2(char* _buffer, unsigned int data);
+int bin_to_dec(int *arr,int in_size);
+unsigned int SIZE_V ;
+int Conv_output[64*samples];
+int EFM_Encoder2_Data[8*samples];
+int Output_Data[16*samples+1];
+/**
+**===========================================================================
+**
+**  Abstract: main program
+**
+**===========================================================================
+*/
+int main(void)
+{
+	// LED configuration
+ 	GPIO_Configuration();
+    // Call USART1 configuration
+    USART_Config();
+    /* Initialize SPI */
+    TM_SPI_Init(SPI1, TM_SPI_PinsPack_1);
+    /* Send 0x15 over SPI1 */
+    TM_SPI_Send(SPI1, 0x15);
+	//Initialize ILI9341
+	TM_ILI9341_Init();
+	//Rotate LCD for 90 degrees
+	TM_ILI9341_Rotate(TM_ILI9341_Orientation_Landscape_2);
+	//FIll lcd with color
+	TM_ILI9341_Puts(10, 10, "Implemented Codes Inside: ", &TM_Font_11x18, ILI9341_COLOR_BLACK, ILI9341_COLOR_WHITE);
+	TM_ILI9341_Puts(10, 40, "1. EFMPlus Encoder 1 :", &TM_Font_7x10, ILI9341_COLOR_BLACK, ILI9341_COLOR_WHITE);
+	TM_ILI9341_Puts(10, 80, "2. Convolutional Encoder :", &TM_Font_7x10, ILI9341_COLOR_BLACK, ILI9341_COLOR_WHITE);
+	TM_ILI9341_Puts(10, 130, "3. EFMPlus Encoder 2 :", &TM_Font_7x10, ILI9341_COLOR_BLACK, ILI9341_COLOR_WHITE);
+	TM_ILI9341_Puts(10, 170, "4. NRZ-I Encoder :", &TM_Font_7x10, ILI9341_COLOR_BLACK, ILI9341_COLOR_WHITE);
+
+	int j=0,k=0,s=0,i=0,p=0,f=0,o=0,jj=0;
+
+ 	while(1)
+ 	{
+ 		//************ UART Receiver**********************
+ 		for(s =0;s< samples;++s)
+ 		{
+// 			for(j =0;j< sizeof(rx_data);++j)
+// 			{
+// 				while (!USART_GetFlagStatus(USART1, USART_FLAG_RXNE));  // Wait till something is received
+// 				rx_data[j] = USART_ReceiveData(USART1);                 // Read received char
+// 		        GPIO_SetBits(GPIOG, GPIO_Pin_13);
+// 		    }// FOR LOOP
+
+ 		   // String/ASCII TO int converting
+//		    temp1[s] = strtol(rx_data, &eptr, 10);  // 10->decimal / 16-> Hex / 2-> Binary
+ 			uint8_t temp1[12] = {53,162,145,217,121,79,197,114,165,52,1,9};
+ 	 		//************* EFMPlus Encoder 1******************
+ 		    EFM_Encoder1_Data[s]= Encoder(temp1[s]);
+
+ 		} // end Receiver FOR LOOP
+
+ 		for(i =0;i< samples;++i)
+ 		{
+ 			int_to_bin_digit(EFM_Encoder1_Data[i],16, temp0);
+ 			for(f =0;f<16;++f){	temp9[i*16+f] = temp0[f];}
+ 		}
+
+			//************* Convolutional Encoder******************
+			Conv_Encoder(temp9,16*samples,Conv_output);
+
+		for(j =0;j<8*samples;++j)
+		{
+			for(p =0;p< 8;++p){temp5[p] = Conv_output[8*j+p];}
+			temp6[j]=bin_to_dec(temp5,8);
+			//************* EFMPlus Encoder 2******************
+			EFM_Encoder2_Data[j]= Encoder2(temp6[j]);
+		}
+
+
+
+		 //**===================================================================================================================
+		//           CHANNEL            CHANNEL              CHANNEL              CHANNEL              CHANNEL
+		 //**===================================================================================================================
+
+		// 		for(i =0;i< 8*samples;++i)
+		// 		{
+		// 			int_to_bin_digit(EFM_Encoder2_Data[i],16, temp11);
+		// 			for(f =0;f<16;++f)
+		// 			{
+		// 				if(temp11[f] == 0){temp12[i*16+f] = -1;}
+		// 				else {temp12[i*16+f] = 1;}
+		// 			}
+		// 		}
+		//
+		// 		for(f =0;f<sizeof(temp12)/sizeof(int);++f){	Tx[f] = temp12[f] + 0.3;}
+
+		 //**===================================================================================================================
+		//           CHANNEL            CHANNEL              CHANNEL              CHANNEL              CHANNEL
+		 //**===================================================================================================================
+
+ 		while((k+1) < 8*samples)
+ 		{
+			To_Binary(EFM_Encoder2_Data[k+1],temp3);
+			To_Binary(EFM_Encoder2_Data[k],temp4);
+
+			state = State_Detector(temp4) ;
+			table = Table_Detector(temp4,temp3) ;
+
+			//**************EFMPlus Decoder 2**********************
+			Out_Data[k] = EFM_Decoder(state, table, EFM_Encoder2_Data[k]);
+			if (Out_Data[k] ==545){Out_Data[k]=255;}
+			int_to_bin_digit(Out_Data[k],8, temp7);
+
+			for(o =0;o<8;++o){temp8[k*8+o]  =temp7[o];}
+			k=k+1;
+ 		} // WHILE LOOP
+
+		//**************Viterbi Decoder**********************
+		 SIZE_V = sizeof(temp8)/sizeof(int);
+		 Viterbi(SIZE_V , temp8,Output_Data );
+
+		for(jj =0;jj<samples-1;++jj)
+		{
+			for(p =0;p< 16;++p)
+			{
+				hold1[p] = Output_Data[16*jj+p+1];
+				temp10[15-p]=hold1[p];
+				hold2[p] = Output_Data[16*jj+p+17];
+				temp11[15-p]=hold2[p];
+			}
+
+			 state = State_Detector(temp10) ;
+			 table = Table_Detector(temp10,temp11);
+			 hold3=bin_to_dec(hold1,16);
+			//**************EFMPlus Decoder 1**********************
+			 Out_Data2[jj] = EFM_Decoder(state, table, hold3);
+
+		}// end for loop
+
+  	} // LARGE WHILE
+
+
+}// END OF MAIN
+
+
+
+
+/**===========================================================================
+           FUNCTIONS
+/*********************************************************************************/
+
+void GPIO_Configuration(void)
+{    // Enable clock for GPIOD (for orange LED)
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);
+    // Initialization of GPIOD (for orange LED)
+    GPIO_InitTypeDef GPIO_InitDef;
+    GPIO_InitDef.GPIO_Pin = GPIO_Pin_13;
+    GPIO_InitDef.GPIO_Mode = GPIO_Mode_OUT;
+    GPIO_InitDef.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitDef.GPIO_PuPd = GPIO_PuPd_NOPULL;
+    GPIO_InitDef.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOG, &GPIO_InitDef);
+}
+
+/**************************************************************************************/
+void USART_Config(void)
+{
+	// Enable clock for GPIOA
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+	// Enable clock for USART1
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+	// Connect PA9 to USART1_Tx
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);
+	// Connect PA10 to USART1_Rx
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);
+	// Initialization of GPIOA
+	GPIO_InitTypeDef GPIO_InitStruct;
+	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10;
+	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;
+	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(GPIOA, &GPIO_InitStruct);
+	// Initialization of USART1
+	USART_InitTypeDef USART_InitStruct;
+	USART_InitStruct.USART_BaudRate = 9600;
+	USART_InitStruct.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+	USART_InitStruct.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+	USART_InitStruct.USART_Parity = USART_Parity_No;
+	USART_InitStruct.USART_StopBits = USART_StopBits_1;
+	USART_InitStruct.USART_WordLength = USART_WordLength_8b;
+	USART_Init(USART1, &USART_InitStruct);
+	//USART_ITConfig(USART1, USART_IT_RXNE, ENABLE); // enable IRQ on RX
+	//NVIC_EnableIRQ(USART1_IRQn);   // Enable IRQ for USART1 in NVIC
+	// Enable USART1
+	USART_Cmd(USART1, ENABLE);
+}
+/**************************************************************************************/
+void USART1_IRQHandler(void)
+{
+ 		char var;
+ 	    while (!USART_GetFlagStatus(USART1, USART_FLAG_RXNE));
+ 	    // Read received char
+ 	    var =  USART_ReceiveData(USART1);
+ 	    if(var == 't')
+ 	    {
+ 		  GPIO_SetBits(GPIOG, GPIO_Pin_13);
+ 		 USART_PutString("ON");
+ 	     }
+
+}
+
+/**************************************************************************************/
+void USART_PutChar(char c)
+{
+    // Wait until transmit data register is empty
+    while (!USART_GetFlagStatus(USART1, USART_FLAG_TXE));
+    // Send a char using USART1
+    USART_SendData(USART1, c);
+}
+/**************************************************************************************/
+void USART_PutString(char *s)
+{
+    // Send a string
+    while (*s)
+    {
+        USART_PutChar(*s++);
+    }
+}
+/**************************************************************************************/
+uint16_t USART_GetChar()
+{
+    // Wait until data is received
+    while (!USART_GetFlagStatus(USART1, USART_FLAG_RXNE));
+    // Read received char
+    return USART_ReceiveData(USART1);
+}
+/**************************************************************************************/
+
+void To_String(char* _buffer, unsigned int data)
+{
+  // we make our string assuming all hex digits are 0 to 9
+  // string will be of the form 0xabcd
+  // where a,b,c,d are the individual hex digits
+  _buffer[0] = '0';
+  _buffer[1] = 'x';
+  _buffer[2] = ( (data>>12) & 0x0F) + '0';
+  _buffer[3] = ( (data>>8)  & 0x0F) + '0';
+  _buffer[4] = ( (data>>4)  & 0x0F) + '0';
+  _buffer[5] = ( (data)     & 0x0F) + '0';
+  _buffer[6] = 0;
+
+  // now we correct for the case where a digit
+  // is A to F:
+  if (_buffer[2] > '9') _buffer[2] += 7;
+  if (_buffer[3] > '9') _buffer[3] += 7;
+  if (_buffer[4] > '9') _buffer[4] += 7;
+  if (_buffer[5] > '9') _buffer[5] += 7;
+
+}
+
+void To_String2(char* _buffer, unsigned int data)
+{
+  // we make our string assuming all hex digits are 0 to 9
+  // string will be of the form 0xabcd
+  // where a,b,c,d are the individual hex digits
+  _buffer[0] = ( (data>>12) & 0x0F) + '0';
+  _buffer[1] = ( (data>>8)  & 0x0F) + '0';
+  _buffer[2] = ( (data>>4)  & 0x0F) + '0';
+  _buffer[3] = ( (data)     & 0x0F) + '0';
+  _buffer[4] = 0;
+
+  // now we correct for the case where a digit
+  // is A to F:
+  if (_buffer[0] > '9') _buffer[2] += 7;
+  if (_buffer[1] > '9') _buffer[3] += 7;
+  if (_buffer[2] > '9') _buffer[4] += 7;
+  if (_buffer[3] > '9') _buffer[5] += 7;
+
+}
+
+int bin_to_dec(int *arr,int in_size)
+{
+   int bin=0,i;
+
+ 	for ( i = 0; i < in_size; ++i )
+	{
+    	bin *= 2;
+    	bin = bin + arr[i];
+	}
+	return bin;
+}
